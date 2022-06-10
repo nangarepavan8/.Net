@@ -1,0 +1,8 @@
+D:\C#\YouTube Tut\3_oops\bin\Debug\3_oops.exe.config
+D:\C#\YouTube Tut\3_oops\bin\Debug\3_oops.exe
+D:\C#\YouTube Tut\3_oops\bin\Debug\3_oops.pdb
+D:\C#\YouTube Tut\3_oops\obj\Debug\3_oops.csproj.AssemblyReference.cache
+D:\C#\YouTube Tut\3_oops\obj\Debug\3_oops.csproj.SuggestedBindingRedirects.cache
+D:\C#\YouTube Tut\3_oops\obj\Debug\3_oops.csproj.CoreCompileInputs.cache
+D:\C#\YouTube Tut\3_oops\obj\Debug\3_oops.exe
+D:\C#\YouTube Tut\3_oops\obj\Debug\3_oops.pdb
