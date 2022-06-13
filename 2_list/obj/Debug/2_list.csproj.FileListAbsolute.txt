@@ -1,0 +1,8 @@
+D:\C#\YouTube Tut\2_list\bin\Debug\2_list.exe.config
+D:\C#\YouTube Tut\2_list\bin\Debug\2_list.exe
+D:\C#\YouTube Tut\2_list\bin\Debug\2_list.pdb
+D:\C#\YouTube Tut\2_list\obj\Debug\2_list.csproj.AssemblyReference.cache
+D:\C#\YouTube Tut\2_list\obj\Debug\2_list.csproj.SuggestedBindingRedirects.cache
+D:\C#\YouTube Tut\2_list\obj\Debug\2_list.csproj.CoreCompileInputs.cache
+D:\C#\YouTube Tut\2_list\obj\Debug\2_list.exe
+D:\C#\YouTube Tut\2_list\obj\Debug\2_list.pdb
