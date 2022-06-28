@@ -1,0 +1,8 @@
+D:\C#\Tasks\06_14\1_Priority_Queue\bin\Debug\1_Priority_Queue.exe.config
+D:\C#\Tasks\06_14\1_Priority_Queue\bin\Debug\1_Priority_Queue.exe
+D:\C#\Tasks\06_14\1_Priority_Queue\bin\Debug\1_Priority_Queue.pdb
+D:\C#\Tasks\06_14\1_Priority_Queue\obj\Debug\1_Priority_Queue.csproj.AssemblyReference.cache
+D:\C#\Tasks\06_14\1_Priority_Queue\obj\Debug\1_Priority_Queue.csproj.SuggestedBindingRedirects.cache
+D:\C#\Tasks\06_14\1_Priority_Queue\obj\Debug\1_Priority_Queue.csproj.CoreCompileInputs.cache
+D:\C#\Tasks\06_14\1_Priority_Queue\obj\Debug\1_Priority_Queue.exe
+D:\C#\Tasks\06_14\1_Priority_Queue\obj\Debug\1_Priority_Queue.pdb
