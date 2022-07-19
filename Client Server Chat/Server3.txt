@@ -1,0 +1,211 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using  System.Net.Sockets;
+using System.Threading;
+using Newtonsoft.Json.Linq;
+
+
+namespace Server
+{
+                                                      //  SERVER N                                 
+
+    internal class Program
+    {
+       static Dictionary<string, Socket> userSocketMap =
+            new Dictionary<string, Socket>();
+
+            
+        static void Main(string[] args)
+        {
+            try
+            {
+
+           
+
+            int port = 8080;
+            string IpAddress = "127.0.0.1";
+
+            Socket serverListner  = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(IpAddress), port);
+
+            serverListner.Bind(endPoint);
+
+            serverListner.Listen(100);
+
+            Console.WriteLine("Server is Listening..");
+
+            Socket clientSocket = default(Socket);
+            
+            Program p = new Program();
+
+            int counter = 0;
+
+            while (true)
+            {
+                counter++;
+
+                clientSocket  = serverListner.Accept();
+
+                byte[] userName = new byte[1024];
+
+                int size = clientSocket.Receive(userName);
+
+                string username = Encoding.ASCII.GetString(userName, 0, size);
+    
+
+                Console.WriteLine("username "+ username);
+     
+                Console.WriteLine(counter + " client " + username +" is Connected ");
+
+               bool isUserPresent =  userSocketMap.ContainsKey(username);
+
+               if(!isUserPresent)
+               {
+                   userSocketMap.Add(username, clientSocket);
+                    
+                    string userListMsg = "Connected users: [ ";
+                    foreach (var key in userSocketMap.Keys)
+                    {
+                        userListMsg = userListMsg + "  " + key +" , ";
+                    }
+                    userListMsg = userListMsg + " ]";
+                    clientSocket.Send(Encoding.ASCII.GetBytes(userListMsg), 0, userListMsg.Length, SocketFlags.None);
+
+                    Thread userThread = new Thread(new ThreadStart(() => p.User(clientSocket, username)));
+
+                   userThread.Start();
+
+                }
+                else
+                {
+                   Console.WriteLine("User "+ username + " already exist..!!");
+                   clientSocket.Send(Encoding.ASCII.GetBytes("Client already present"), 0, "Client already present".Length, SocketFlags.None);
+                   clientSocket.Close();
+              
+
+                }
+                
+            }
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine(e);
+
+            }
+
+        }
+
+        public void User(Socket client, string userName)
+        {
+            try
+            {
+
+           
+            while (true)
+            {
+             
+                NetworkStream readStream = new NetworkStream(client);
+                StreamReader sr = new StreamReader(readStream);
+                string msg;
+                Console.WriteLine("Waiting for read...1  ");
+                msg = sr.ReadLine();
+                
+                
+
+                //Console.WriteLine(msg);
+                
+                /*
+                while ((msg = sr.ReadLine()) != null)
+                {
+                    Console.WriteLine(msg);
+                }
+                */
+             
+                
+                Console.WriteLine("Message recieved.");
+                Console.WriteLine(msg);
+
+
+                //Console.WriteLine("size : "+ client.ReceiveBufferSize);
+                //byte[] msgByte = new byte[client.ReceiveBufferSize];
+                //int size = client.Receive(msgByte);
+                //Console.WriteLine(" next size "+ size);
+                //msg = Encoding.ASCII.GetString(msgByte, 0, size)
+
+                //string msg = Socket(client);
+
+                Console.WriteLine(msg);
+
+                //Parse the json object
+
+                JObject jsonObject = JObject.Parse(msg);
+
+                //Print the parsed Json msg
+            
+                string username =(string)jsonObject["username"];
+                
+                string receiver= (string)jsonObject["receiver"];
+               
+                string message = (string)jsonObject["message"];
+
+
+                if (receiver == "")
+                {
+                    foreach (var item in userSocketMap)
+                    {
+                        Console.WriteLine(item.Key + ": " + item.Value + "OutSide IF");
+
+                        Console.WriteLine("username: " + username);
+                        Console.WriteLine("item.Key: " + item.Key);
+                        Console.WriteLine("item.Value: " + item.Value);
+                        if (username != item.Key)
+                        {
+                            Console.WriteLine(item.Key + ": " + item.Value + "InSide IF");
+
+                            item.Value.Send(Encoding.ASCII.GetBytes(message), 0, message.Length, SocketFlags.None);
+                        }
+
+                    }
+                }
+                else
+                {
+                    Socket receiverSocket;
+                    if (userSocketMap.TryGetValue(receiver, out receiverSocket))
+                    {
+                        receiverSocket.Send(Encoding.ASCII.GetBytes(message), 0, message.Length, SocketFlags.None);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Receiver: " + receiver + " not found.");
+                    }
+                }
+
+
+                msg = null;
+            }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("   Exception in client thread  "+ e);
+                userSocketMap.Remove(userName);
+                client.Close();
+
+            }
+
+        }
+
+    }
+}
+
+
+
+
+
+
+

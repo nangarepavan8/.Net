@@ -1,0 +1,149 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using  System.Net.Sockets;
+using System.Threading;
+using Newtonsoft.Json;
+
+namespace Client
+{
+                                                    // CLIENT N
+    internal class Program
+    {
+       // private static string userName;
+
+        static void Main(string[] args)
+        {
+            ExecuteClient();
+        }
+
+        public static void ExecuteClient()
+        {
+
+            try
+            {
+                int port = 8080;
+                string IpAdress = "127.0.0.1";
+
+                Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+                IPEndPoint ep = new IPEndPoint(IPAddress.Parse(IpAdress), port);
+
+                Program p = new Program();
+
+                clientSocket.Connect(ep);
+
+                Console.WriteLine("Client Socket is Connected..");
+
+                Console.WriteLine("Enter your User Name");
+
+                // change
+                string userName = Console.ReadLine();
+
+                clientSocket.Send(Encoding.ASCII.GetBytes(userName), 0, userName.Length, SocketFlags.None);
+
+                Thread reciverThread = new Thread(new ThreadStart(() => receive(clientSocket)));
+
+                reciverThread.Start();
+                // Write
+                while (true)
+                {
+                    string messageFormClient = null;
+
+                    Console.WriteLine("Enter the message :  ");
+                    messageFormClient = Console.ReadLine();
+
+                    string receiver = "";
+                    string message = userName + " : " + messageFormClient;
+
+                      // hi  all
+                     // @k1 hii k1
+
+                    string[] result = messageFormClient.Split('@');
+                    if (result.Length > 1)
+                    {
+                        string[] recvmsg = result[1].Split(' ');
+                        receiver = recvmsg[0];
+                        message = "";
+                        for (int i = 1; i < recvmsg.Length; i++)
+                        {
+                            message = message + recvmsg[i] + " ";
+                        }
+                        message = userName + " : " + message;
+                    }
+
+
+                    var payLoad = new
+                    {
+                        username = userName,
+                        receiver = receiver,
+                        message = message
+                    };
+
+                    //Transfer it to Json object
+                    string jsonData = JsonConvert.SerializeObject(payLoad);
+
+                    //Print the Json object
+                    //Console.WriteLine(jsonData);
+
+                    NetworkStream ns = new NetworkStream(clientSocket);
+                    StreamReader sr = new StreamReader(ns);
+                    StreamWriter sw = new StreamWriter(ns);
+                    sw.WriteLine(jsonData);
+
+                    sw.Flush();
+
+
+                    //  clientSocket.Send(Encoding.ASCII.GetBytes(jsonData), 0, jsonData.Length,SocketFlags.None);
+
+
+                }
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine(e);
+
+            }
+        }
+
+        //   Read
+        public static void receive(Socket clientSocket)
+        {
+            try
+            {
+
+           
+            while (true)
+            {
+                byte[] messageFromServer = new byte[1024];
+
+                int size = clientSocket.Receive(messageFromServer);
+                string message = Encoding.ASCII.GetString(messageFromServer, 0, size);
+
+                if (message == "Client already present")
+                {
+                    Console.WriteLine(message);
+
+                    ExecuteClient();
+                    //clientSocket.Close();
+                   // System.Environment.Exit(1);
+                }
+                Console.WriteLine(message);
+
+            }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("   Server Exit..!!      "+ e);
+                clientSocket.Close();
+                System.Environment.Exit(1);
+
+            }
+        }
+    }
+}
